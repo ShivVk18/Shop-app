@@ -1,17 +1,41 @@
-import { NavLink } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { NavLink, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import CartItem from "../components/CartItem";
+import toast from "react-hot-toast";
+import { remove } from "../redux/slices/CartSlice";
 
-const Cart = () => {
+const Cart = ({item}) => {
   const { cart } = useSelector((state) => state);
   const [amount, setAmount] = useState(0);
+  const [checkCheckout,setCheckCheckout] = useState(false)
 
-  // console.log(cart)
+  
   useEffect(() => {
     setAmount(cart.reduce((acc, curr) => acc + curr.price, 0));
   }, [cart]);
+  
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const checkOutHandler = (e) =>{
+    e.preventDefault();
 
+   
+    toast.success("Checkout successful! Hope to see you soon");
+  
+    
+    setCheckCheckout(true);
+  
+    
+    cart.forEach(item => dispatch(remove(item.id)));
+  
+    
+    setAmount(0);
+  
+    
+    navigate('/');
+
+  }
   return (
     <div className="mb-10">
       {cart.length > 0 ? (
@@ -47,7 +71,7 @@ const Cart = () => {
                 </span>{" "}
                 ${amount}
               </p>
-              <button className="bg-green-700 hover:bg-purple-50 rounded-lg text-white transition duration-300 ease-linear mt-5 border-2 border-green-600 font-bold hover:text-green-700 p-3 text-xl mr-10">
+              <button className="bg-green-700 hover:bg-purple-50 rounded-lg text-white transition duration-300 ease-linear mt-5 border-2 border-green-600 font-bold hover:text-green-700 p-3 text-xl mr-10" onClick={checkOutHandler}>
                 CheckOut Now
               </button>
             </div>
